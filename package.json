@@ -1,0 +1,25 @@
+{
+  "name": "aeyehealth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gui/main.js",
+  "productName": "AEye Health",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "build": {
+    "productName": "AEye Health"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^25.1.1"
+  },
+  "dependencies": {
+    "blink-detection": "^1.2.1",
+    "electron-build": "^0.0.3",
+    "python-shell": "^5.0.0",
+    "ws": "^8.13.0"
+  }
+}
