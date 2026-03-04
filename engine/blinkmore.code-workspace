@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "engine",
+			"path": "."
+		},
+		{
+			"name": "gui",
+			"path": "../gui"
+		}
+	],
+	"settings": {}
+}
