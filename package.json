@@ -1,15 +1,15 @@
 {
-  "name": "aeyehealth",
+  "name": "blink",
   "version": "1.0.0",
   "description": "",
   "main": "gui/main.js",
-  "productName": "AEye Health",
+  "productName": "blink",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
   },
   "build": {
-    "productName": "AEye Health"
+    "productName": "blink"
   },
   "author": "",
   "license": "ISC",

@@ -1,4 +1,4 @@
-# AEYE Health - Smart Eye Care
+Blink- Smart Eye Care
 
 A modern, intelligent eye health monitoring application that helps you maintain healthy blinking habits and reduce digital eye strain.
 
@@ -23,13 +23,13 @@ A modern, intelligent eye health monitoring application that helps you maintain 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd AEYEHealth
+   cd blink
    ```
 
 2. **Set up the Python environment**
    ```bash
-   conda create -n aeyehealth python=3.11
-   conda activate aeyehealth
+   conda create -n blink python=3.11
+   conda activate blink
    pip install opencv-python dlib imutils scipy requests
    ```
 
@@ -43,7 +43,7 @@ A modern, intelligent eye health monitoring application that helps you maintain 
 
 1. **Start the eye tracking engine**
    ```bash
-   conda activate aeyehealth
+   conda activate blink
    python3 engine/faces.py
    ```
 
@@ -72,7 +72,7 @@ python3 run_camera_background.py
 
 **Option 3: Direct execution**
 ```bash
-conda activate aeyehealth
+conda activate blink
 python3 engine/faces.py
 ```
 
@@ -123,7 +123,7 @@ This is perfect for:
 
 ### About & Contact
 - **Feature Overview**: Detailed explanation of app capabilities
-- **Team Information**: Meet the developers behind AEYE Health
+- **Team Information**: Meet the developers behind Blink Health
 - **Contact Links**: Connect with the team via GitHub
 
 ## 🔧 Technical Stack
@@ -174,7 +174,7 @@ If you encounter camera permission errors:
 ### Environment Issues
 If you have dependency problems:
 ```bash
-conda activate aeyehealth
+conda activate blink
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -183,23 +183,4 @@ pip install -r requirements.txt
 If you need to access developer tools for debugging:
 - **Keyboard Shortcut**: Press `F12` (Windows/Linux) or `Cmd+Option+I` (macOS)
 - **Menu Option**: Go to Developer > Toggle Developer Tools
-- **Note**: Developer tools are disabled by default for a cleaner user experience
-
-## 🤝 Contributing
-
-We welcome contributions! Please feel free to submit issues and pull requests.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Team
-
-- **Nick** - [GitHub](https://github.com/AgarwalAarush)
-- **Sander** - [GitHub](https://github.com/akshayshivkumar)
-- **Aarush** - [GitHub](https://github.com/nickflix3003)
-- **Akshay** - [GitHub](https://github.com/sandervonk)
-
----
-
-**AEYE Health** - Making eye care smarter, one blink at a time. 👁️✨
+- **Note**: Developer tools are disabled by default for a cleaner user
