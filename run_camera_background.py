@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AEYE Health - Background Camera Runner
+blink Health - Background Camera Runner
 
 This script runs the eye tracking camera in the background without showing any GUI.
 The camera will continuously monitor for blinks and save data to storage.json.
@@ -37,7 +37,7 @@ def main():
 
     if not faces_script.exists():
         print(f"Error: Could not find {faces_script}")
-        print("Make sure you're running this from the AEYE Health root directory")
+        print("Make sure you're running this from the Blink Health root directory")
         sys.exit(1)
 
     print("=" * 50)
