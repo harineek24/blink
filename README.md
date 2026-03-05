@@ -9,8 +9,21 @@ A modern, intelligent eye health monitoring application that helps you maintain 
 - **Intelligent Alerts**: Timely reminders to maintain healthy eye habits
 - **Modern UI**: Professional, responsive design with smooth animations
 - **Health Suggestions**: Personalized recommendations based on your usage patterns
+- **Chrome Extension**: Browser plugin version with the same blink detection — no Python required
+
+## Two Versions
+
+| | Desktop App (Electron) | Chrome Extension |
+|---|---|---|
+| **Blink Detection** | Python + OpenCV + dlib | MediaPipe FaceMesh (JS) |
+| **UI** | Electron window | Browser popup |
+| **Data Storage** | `storage.json` file | `chrome.storage.local` |
+| **Install** | Clone + conda + npm | Load unpacked in Chrome |
+| **Best For** | Full dashboard experience | Lightweight, always-on monitoring |
 
 ## 🚀 Quick Start
+
+### Option A: Desktop App
 
 ### Prerequisites
 
@@ -86,6 +99,26 @@ This is perfect for:
 - Running the camera while working on other tasks
 - Server environments without display
 - Automated monitoring setups
+
+### Option B: Chrome Extension
+
+1. **Run the setup script**
+   ```bash
+   cd extension
+   ./setup.sh
+   ```
+
+2. **Load in Chrome**
+   - Open `chrome://extensions`
+   - Enable **Developer mode** (top right)
+   - Click **Load unpacked** and select the `extension/` folder
+
+3. **Start tracking**
+   - Click the Blink icon in your toolbar
+   - Hit **Start** to begin blink detection
+   - Grant camera permission when prompted
+
+The extension uses MediaPipe FaceMesh for blink detection entirely in-browser — no Python backend needed.
 
 ## 🎨 Modernized GUI Features
 

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Blink - Smart Eye Care",
+  "version": "1.0.0",
+  "description": "Monitor your eye health and reduce digital eye strain with intelligent blink tracking",
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms",
+    "offscreen"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html"
+}

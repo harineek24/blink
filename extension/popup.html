@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blink - Smart Eye Care</title>
+  <link rel="stylesheet" href="popup.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <img src="icons/icon48.png" alt="Blink" class="header-logo" />
+      <span class="header-title">Blink</span>
+    </div>
+    <button id="settings-btn" class="icon-btn" title="Settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Tracking Toggle -->
+    <div class="tracking-bar">
+      <div class="tracking-status">
+        <span id="tracking-dot" class="status-dot"></span>
+        <span id="tracking-label">Not tracking</span>
+      </div>
+      <button id="toggle-btn" class="toggle-btn">Start</button>
+    </div>
+
+    <!-- Blink Counter -->
+    <div class="counter-section">
+      <div class="counter-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="52" />
+          <circle id="ring-progress" class="ring-fill" cx="60" cy="60" r="52" />
+        </svg>
+        <div class="counter-value">
+          <span id="blink-count">0</span>
+          <span class="counter-label">blinks</span>
+        </div>
+      </div>
+      <div class="counter-meta">
+        <div class="meta-item">
+          <span class="meta-value" id="percentage">0%</span>
+          <span class="meta-label">of daily goal</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-value" id="blinks-per-min">--</span>
+          <span class="meta-label">blinks/min</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestion -->
+    <div id="suggestion" class="suggestion-card">
+      <span class="suggestion-icon">💡</span>
+      <span class="suggestion-text">Start tracking to receive eye care tips</span>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <span class="chart-title">Recent Trends</span>
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="today">Today</button>
+          <button class="view-btn" data-view="week">Week</button>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="trends-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-value" id="today-total">0</span>
+        <span class="stat-label">Today</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="week-avg">0</span>
+        <span class="stat-label">Week Avg</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="best-day">0</span>
+        <span class="stat-label">Best Day</span>
+      </div>
+    </div>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>
