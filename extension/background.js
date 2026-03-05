@@ -20,7 +20,6 @@ const STORAGE_DEFAULTS = {
 };
 
 const ALARM_INTERVAL = 'blink-interval-check';
-const ALARM_DAILY_RESET = 'blink-daily-reset';
 
 // ── State ──────────────────────────────────────────────────────────
 let offscreenCreated = false;
@@ -29,22 +28,22 @@ let isTracking = false;
 
 // ── Offscreen Document Management ──────────────────────────────────
 async function ensureOffscreenDocument() {
-  if (offscreenCreated) return;
+  // Check if an offscreen document already exists
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT']
+  });
 
-  try {
-    await chrome.offscreen.createDocument({
-      url: 'offscreen.html',
-      reasons: ['USER_MEDIA'],
-      justification: 'Webcam access for blink detection'
-    });
+  if (existingContexts.length > 0) {
     offscreenCreated = true;
-  } catch (err) {
-    // Document may already exist
-    if (!err.message.includes('already exists')) {
-      throw err;
-    }
-    offscreenCreated = true;
+    return;
   }
+
+  await chrome.offscreen.createDocument({
+    url: 'offscreen.html',
+    reasons: ['USER_MEDIA'],
+    justification: 'Webcam access for blink detection'
+  });
+  offscreenCreated = true;
 }
 
 async function closeOffscreenDocument() {
@@ -55,6 +54,27 @@ async function closeOffscreenDocument() {
     // Ignore errors when closing
   }
   offscreenCreated = false;
+}
+
+/**
+ * Send a message to the offscreen document with retry.
+ * The offscreen doc may not have its listener ready immediately after creation.
+ */
+async function sendToOffscreen(message, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await chrome.runtime.sendMessage(message);
+      return response;
+    } catch (err) {
+      if (i < retries - 1) {
+        // Wait for offscreen document scripts to initialize
+        await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+      } else {
+        console.error('Failed to reach offscreen document:', err);
+        throw err;
+      }
+    }
+  }
 }
 
 // ── Data Management ────────────────────────────────────────────────
@@ -101,7 +121,7 @@ async function updateIntervalData(currentCount) {
 }
 
 // ── Notifications ──────────────────────────────────────────────────
-async function checkAndNotify(blinkCount) {
+async function checkAndNotify() {
   const data = await getData();
   const settings = data.settings || STORAGE_DEFAULTS.settings;
 
@@ -126,7 +146,9 @@ async function startTracking() {
   if (isTracking) return;
 
   await ensureOffscreenDocument();
-  chrome.runtime.sendMessage({ type: 'START_DETECTION' });
+
+  // Send start message with retry to handle initialization delay
+  await sendToOffscreen({ type: 'START_DETECTION' });
   isTracking = true;
 
   // Set up interval alarm for data aggregation
@@ -142,7 +164,11 @@ async function startTracking() {
 async function stopTracking() {
   if (!isTracking) return;
 
-  chrome.runtime.sendMessage({ type: 'STOP_DETECTION' });
+  try {
+    await sendToOffscreen({ type: 'STOP_DETECTION' });
+  } catch {
+    // Offscreen doc may already be gone
+  }
   await closeOffscreenDocument();
   isTracking = false;
 
@@ -169,9 +195,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   if (message.type === 'TOGGLE_TRACKING') {
     if (isTracking) {
-      stopTracking().then(() => sendResponse({ tracking: false }));
+      stopTracking()
+        .then(() => sendResponse({ tracking: false }))
+        .catch(() => sendResponse({ tracking: false, error: true }));
     } else {
-      startTracking().then(() => sendResponse({ tracking: true }));
+      startTracking()
+        .then(() => sendResponse({ tracking: true }))
+        .catch(err => sendResponse({ tracking: false, error: err.message }));
     }
     return true; // async response
   }
@@ -180,16 +210,26 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     sendResponse({ tracking: isTracking });
   }
 
+  if (message.type === 'REQUEST_CAMERA_PERMISSION') {
+    // Camera permission must be granted from a visible page (popup or tab).
+    // This message just confirms the background is aware.
+    sendResponse({ ok: true });
+  }
+
   if (message.type === 'RESET_DAILY') {
-    getData().then(data => {
+    getData().then(async data => {
       data.blinkcounter = 0;
       data.current_day_intervals = [];
       data.last_interval_update = new Date().toISOString();
       previousIntervalCount = 0;
-      saveData(data);
+      await saveData(data);
       // Reset counter in offscreen doc too
       if (offscreenCreated) {
-        chrome.runtime.sendMessage({ type: 'RESET_COUNT' });
+        try {
+          await sendToOffscreen({ type: 'RESET_COUNT' });
+        } catch {
+          // Offscreen doc may not be running
+        }
       }
       sendResponse({ success: true });
     });
@@ -200,8 +240,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 // ── Alarms ─────────────────────────────────────────────────────────
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_INTERVAL) {
-    const data = await getData();
-    await checkAndNotify(data.blinkcounter);
+    await checkAndNotify();
   }
 });
 

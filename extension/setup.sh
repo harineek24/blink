@@ -8,16 +8,40 @@ EXTENSION_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "Setting up Blink Chrome Extension..."
 
+# ── Create directories ───────────────────────────────────────────
+mkdir -p "$EXTENSION_DIR/lib"
+mkdir -p "$EXTENSION_DIR/icons"
+
 # ── Download TensorFlow.js and Face Landmarks Detection ──────────
 echo "Downloading TensorFlow.js libraries..."
 
-# TF.js core + backend
+# TF.js (core + backends + converter, all-in-one bundle)
 curl -sL "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js" \
   -o "$EXTENSION_DIR/lib/tf.min.js"
+echo "  ✓ tf.min.js"
 
-# Face landmarks detection (includes MediaPipe FaceMesh)
+# Face detection model (peer dependency of face-landmarks-detection)
+curl -sL "https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection@1.0.4/dist/face-detection.min.js" \
+  -o "$EXTENSION_DIR/lib/face-detection.js"
+echo "  ✓ face-detection.js"
+
+# Face landmarks detection (provides MediaPipeFaceMesh model)
 curl -sL "https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.5/dist/face-landmarks-detection.min.js" \
   -o "$EXTENSION_DIR/lib/face-landmarks-detection.js"
+echo "  ✓ face-landmarks-detection.js"
+
+# Chart.js (for popup dashboard charts — MV3 CSP blocks CDN scripts)
+curl -sL "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" \
+  -o "$EXTENSION_DIR/lib/chart.umd.min.js"
+echo "  ✓ chart.umd.min.js"
+
+# Verify downloads aren't empty
+for file in tf.min.js face-detection.js face-landmarks-detection.js chart.umd.min.js; do
+  if [ ! -s "$EXTENSION_DIR/lib/$file" ]; then
+    echo "ERROR: Failed to download $file (file is empty)"
+    exit 1
+  fi
+done
 
 echo "Libraries downloaded."
 
@@ -51,3 +75,4 @@ echo "  1. Open Chrome and navigate to chrome://extensions"
 echo "  2. Enable 'Developer mode' (top right)"
 echo "  3. Click 'Load unpacked' and select: $EXTENSION_DIR"
 echo "  4. Click the Blink icon in your toolbar and hit 'Start'"
+echo "  5. Grant camera permission when prompted"

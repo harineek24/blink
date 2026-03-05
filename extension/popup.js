@@ -208,9 +208,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // Refresh data every 2 seconds while popup is open
   setInterval(updateUI, 2000);
 
-  // Toggle tracking
+  // Toggle tracking — request camera permission first if needed
   document.getElementById('toggle-btn').addEventListener('click', async () => {
-    await chrome.runtime.sendMessage({ type: 'TOGGLE_TRACKING' });
+    const response = await chrome.runtime.sendMessage({ type: 'GET_TRACKING_STATUS' });
+    const isCurrentlyTracking = response?.tracking || false;
+
+    if (!isCurrentlyTracking) {
+      // Before starting, ensure camera permission is granted.
+      // Offscreen documents can't show permission prompts, so we
+      // request it here in the popup (a visible context).
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Permission granted — stop the stream immediately (offscreen will open its own)
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err) {
+        const label = document.getElementById('tracking-label');
+        label.textContent = 'Camera access denied';
+        console.error('Camera permission denied:', err);
+        return;
+      }
+    }
+
+    const result = await chrome.runtime.sendMessage({ type: 'TOGGLE_TRACKING' });
+    if (result?.error) {
+      const label = document.getElementById('tracking-label');
+      label.textContent = 'Error: ' + (result.error === true ? 'Failed to start' : result.error);
+    }
     updateTrackingUI();
   });
 
